@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title> Welcome! </title>
+  </head>
+
+  <body>
+    {% if un != "Sorry, your username is incorrect" and pw != "Sorry, your password is incorrect" %}
+    Welcome {{un}}!
+    <br>
+    You used {{method}} method!
+    {% elif pw == "Sorry, your password is incorrect" %}
+      {{pw}}
+    {% else %}
+      {{un}}
+    {% endif %}
+    
+    <form method="POST" action="/logout">
+      <input type="submit" value="Logout">
+    </form>
+    
+  </body>
+</html>
