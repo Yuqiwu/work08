@@ -8,9 +8,9 @@ password = "pass"
 u = "Sorry, your username is incorrect"
 p = "Sorry, your password is incorrect"
 
-def check(user, passw):
-    if user == request.form['username']:
-        if password == request.form['password']:
+def check(getUser, getPass):
+    if user == getUser:
+        if password == getPass:
             session["user"] = user
             return 1
         else:
@@ -21,29 +21,30 @@ def check(user, passw):
 @my_app.route('/', methods=["POST", "GET"])
 def root():
     if "user" in session and session["user"] == user:
+        session['method'] = request.method
         return redirect( url_for('welcome') )
     return render_template("form.html")
 
 @my_app.route("/welcome", methods=["POST", "GET"])
 def welcome():
-    m = request.method
-    username = request.form('username')
-    password = request.form('password')
-    return render_template('welcome.html', un = username, pw = password, method = m)
+    return render_template('welcome.html', un = session['user'], method = session['method'])
 
-@my_app.route("check", methods=["POST", "GET"])
-def auth():    
-    username = request.form('username')
-    password = request.form('password')
-    result = check(username, password)
+@my_app.route("/check", methods=["POST", "GET"])
+def auth():
+    m = request.method
+    getUser = request.form['username']
+    getPass = request.form['password']
+    result = check(getUser, getPass)
     if result == 1:
-        redirect( url_for("welcome") )
-    else if result == 2:
+        session['user'] = getUser
+        session['method'] = m
+        return redirect( url_for("welcome") ) # this become a GET method
+    elif result == 2:
         flash("Sorry, your password is incorrect")
-        redirect( url_for("/") )
+        return redirect( url_for("root") )
     else:
         flash("Sorry, your username does not exist")
-        redirect( url_for("/") )
+        return redirect( url_for("root") )
 
 @my_app.route("/logout", methods=["POST","GET"])
 def logout():
